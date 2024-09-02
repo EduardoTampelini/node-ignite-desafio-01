@@ -7,37 +7,42 @@ const database = new Database()
 export const routes = [
     {
         method:'GET',
-        path: buildRoutePath('/users'),
+        path: buildRoutePath('/tasks'),
         handler: (req,res)=>{
-            const users = database.select('users')
+            const tasks = database.select('tasks')
 
-            return res.end(JSON.stringify(users))
+            return res.end(JSON.stringify(tasks))
         }
     },
     {
         method:'POST',
-        path: buildRoutePath('/users'),
+        path: buildRoutePath('/tasks'),
         handler:(req , res)=>{
-            const { name, email } = req.body
-        const user = {
+            const { title , description} = req.body
+           
+        const task = {
             id: randomUUID(),
-            name,
-            email
+            title ,
+            description, 
+            completed_at: null, 
+            created_at: Date.now(), 
+            updated_at 
         }
-        database.insert('users', user)
+        database.insert('tasks', task)
         return res.writeHead(201).end()
         }
     },
     {
         method: 'PUT',
-        path: buildRoutePath('/users/:id'),
+        path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
           const { id } = req.params
           const { name, email } = req.body
     
-          database.update('users', id, {
+          database.update('tasks', id, {
             name,
             email,
+            updated_at:  Date.now(),
           })
     
           return res.writeHead(204).end()
@@ -45,11 +50,11 @@ export const routes = [
       },
     {
         method: 'DELETE',
-        path: buildRoutePath('/users/:id'),
+        path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
             const { id } = req.params
 
-            database.delete('users', id)
+            database.delete('tasks', id)
       
             return res.writeHead(204).end()
         }
