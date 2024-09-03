@@ -1,9 +1,15 @@
+
 import { randomUUID } from 'node:crypto'
 import { Database } from './database.js'
 import { buildRoutePath } from './utils/build-route-path.js'
 
 const database = new Database()
-
+let task = {
+    id: randomUUID(),
+    completed_at: null, 
+    created_at: Date.now(), 
+    updated_at: null
+}
 export const routes = [
     {
         method:'GET',
@@ -19,17 +25,22 @@ export const routes = [
         path: buildRoutePath('/tasks'),
         handler:(req , res)=>{
             const { title , description} = req.body
-           
-        const task = {
-            id: randomUUID(),
-            title ,
-            description, 
-            completed_at: null, 
-            created_at: Date.now(), 
-            updated_at 
+             task = {
+                id: randomUUID(),
+                title ,
+                description, 
+                completed_at: null, 
+                created_at: Date.now(), 
+                updated_at: null
+            }
+        
+        if(title && description){
+            database.insert('tasks', task) 
+            return res.writeHead(201).end()  
+        } else{
+            return res.writeHead(404).end()
         }
-        database.insert('tasks', task)
-        return res.writeHead(201).end()
+        
         }
     },
     {
@@ -37,13 +48,16 @@ export const routes = [
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
           const { id } = req.params
-          const { name, email } = req.body
-    
-          database.update('tasks', id, {
-            name,
-            email,
+          const { title, description } = req.body
+          const dataUpdate = {
+            title,
+            description,
+            completed_at: task.completed_at, 
+            created_at: task.created_at, 
             updated_at:  Date.now(),
-          })
+          }
+    
+          database.update('tasks', id, dataUpdate)
     
           return res.writeHead(204).end()
         }
