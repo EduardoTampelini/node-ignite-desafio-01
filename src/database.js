@@ -35,14 +35,28 @@ export class Database {
   
       return data
     }
-    update(table, id, data) {
+    update(table, id, title, description, updated_at) {
       const rowIndex = this.#database[table].findIndex(row => row.id === id)
   
       if (rowIndex > -1) {
-        this.#database[table][rowIndex] = {id, ...data }
+        if(title){
+          this.#database[table][rowIndex].title = title
+        }
+        if(description){
+          this.#database[table][rowIndex].description = description
+        }
+        this.#database[table][rowIndex].updated_at = updated_at
         this.#persist()
       }
     }
+    updateStatus(table, id,completed_at){
+      const rowIndex = this.#database[table].findIndex(row => row.id === id)
+      if (rowIndex > -1) {
+        this.#database[table][rowIndex].completed_at = completed_at
+        this.#persist()
+      }
+    }
+    
     delete(table, id) {
       const rowIndex = this.#database[table].findIndex(row => row.id === id)
   

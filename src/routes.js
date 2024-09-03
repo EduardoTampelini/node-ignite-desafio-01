@@ -4,12 +4,7 @@ import { Database } from './database.js'
 import { buildRoutePath } from './utils/build-route-path.js'
 
 const database = new Database()
-let task = {
-    id: randomUUID(),
-    completed_at: null, 
-    created_at: Date.now(), 
-    updated_at: null
-}
+
 export const routes = [
     {
         method:'GET',
@@ -25,7 +20,7 @@ export const routes = [
         path: buildRoutePath('/tasks'),
         handler:(req , res)=>{
             const { title , description} = req.body
-             task = {
+             const task = {
                 id: randomUUID(),
                 title ,
                 description, 
@@ -49,15 +44,21 @@ export const routes = [
         handler: (req, res) => {
           const { id } = req.params
           const { title, description } = req.body
-          const dataUpdate = {
-            title,
-            description,
-            completed_at: task.completed_at, 
-            created_at: task.created_at, 
-            updated_at:  Date.now(),
-          }
+          
     
-          database.update('tasks', id, dataUpdate)
+          database.update('tasks', id, title,description, Date.now())
+    
+          return res.writeHead(204).end()
+        }
+      },
+      {
+        method: 'PATCH',
+        path: buildRoutePath('/tasks/:id/complete'),
+        handler: (req, res) => {
+          const { id } = req.params
+          
+    
+          database.updateStatus('tasks', id, Date.now())
     
           return res.writeHead(204).end()
         }
